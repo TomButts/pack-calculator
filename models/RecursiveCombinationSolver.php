@@ -2,7 +2,9 @@
 
 namespace app\models;
 
-class RecursiveCombinationSolver
+use app\models\interfaces\CombinationSolver;
+
+class RecursiveCombinationSolver implements CombinationSolver
 {
     /**
      * Tracks the best sum found by combinations
@@ -49,7 +51,7 @@ class RecursiveCombinationSolver
      * @param array $numbers
      * @return array $bestCombo
      */
-    public function calculateCombinations($target, $numbers)
+    public function calculateCombinations(int $target, array $numbers)
     {
         $this->target = $target;
         $this->numbers = $numbers;
@@ -72,9 +74,10 @@ class RecursiveCombinationSolver
      * @param integer $target The target that the sum of the numbers must be equal to or greater than.
      * @param array $numbers An array of positive integers
      * @param array $currentCombo Array keeping track of the values in a combo during recursion.
+     * @param integer $currentNumber Array keeping track of the values in a combo during recursion.
      * @return void
      */
-    private function calculate($target, $numbers, $currentCombo = [])
+    private function calculate($target, $numbers, $currentCombo = [], $currentNumber = 0)
     {
         // This solution is greater than the target or exactly right
         if ($target <= 0) {
@@ -132,8 +135,8 @@ class RecursiveCombinationSolver
         }
         
         // The target has not been reached keep building combination
-        foreach ($numbers as $index => $number) {
-            $this->calculate($target - $number, $numbers, array_merge($currentCombo, [$number]));
-        } 
+        for ($number = $currentNumber; $number < count($numbers); $number++) {
+            $this->calculate($target - $numbers[$number], $numbers, array_merge($currentCombo, [$numbers[$number]]), $number);
+        }
     }
 }

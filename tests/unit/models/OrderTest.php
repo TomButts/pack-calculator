@@ -2,7 +2,7 @@
 namespace orders;
 
 use app\models\Order;
-use app\models\Pack;
+use app\models\RecursiveCombinationSolver;
 
 class OrderTest extends \Codeception\Test\Unit
 {
@@ -13,15 +13,37 @@ class OrderTest extends \Codeception\Test\Unit
 
     protected $order;
 
-    protected $pack;
-    
-    public function testItHasTheOrderVolume()
-    {
-        $this->order = new Order();
-        
-        $this->order->volume = 19;
+    /**
+     * Packs from the question
+     *
+     * @var array
+     */
+    protected $packs = [250, 500, 1000, 2000, 5000];
 
-        expect($this->order->volume)->equals(19);
+    /**
+     * @dataProvider questionPackProvider
+     */
+    public function testItCalculatesRequiredPacksUsingQuestionPacks($volume, $expected)
+    {
+        $order = new Order();
+        $order->volume = $volume;
+
+        $solver = new RecursiveCombinationSolver();
+
+        expect($order->calculateRequiredPacks($this->packs, $solver))
+            ->equals($expected);
+    }
+
+    public function questionPackProvider()
+    {
+        return [
+            'for 1' => [1, [250]],
+            'for 250' => [250, [250]],
+            'for 251' => [251, [500]],
+            'for 500' => [500, [500]],
+            'for 760' => [760, [1000]],
+            'for 12001' => [12001, [5000, 5000, 2000, 250]]
+        ];
     }
 
     /**
@@ -31,22 +53,19 @@ class OrderTest extends \Codeception\Test\Unit
     {
         $order = new Order();
         $order->volume = $volume;
-        
-        expect($order->calculateRequiredPacks(new Pack()))->equals($expected);
+
+        $solver = new RecursiveCombinationSolver();
+
+        $packs = [123, 300, 500, 600, 5000];
+
+        expect($order->calculateRequiredPacks($packs, $solver))
+            ->equals($expected);
     }
 
     public function packProvider()
     {
         return [
-            'Correct for 1' => [1, [250]],
-            'Correct for 250' => [250, [250]],
-            'Correct for 251' => [251, [500]],
-            'Correct for 500' => [500, [500]],
-            'Correct for 760' => [760, [1000]],
-            'Correct for 12001' => [12001, [5000, 5000, 2000, 250]],
-            'Correct for 15100' => [15100, [5000, 5000, 5000, 250]],
-            'Correct for 15257' => [15257, [5000, 5000, 5000, 500]],
-            'Correct for 15751' => [15751, [5000, 5000, 5000, 1000]]
+            'when number is awkwardly below max pack' => [4000, [600, 600, 600, 600, 600, 500, 500]]
         ];
     }
 }
