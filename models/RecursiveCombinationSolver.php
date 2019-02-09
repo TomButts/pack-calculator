@@ -4,19 +4,62 @@ namespace app\models;
 
 class RecursiveCombinationSolver
 {
+    /**
+     * Tracks the best sum found by combinations
+     *
+     * @var mixed
+     */
     public $bestSum = false;
     
-    public $bestCombo = false;
+    /**
+     * Tracks the combination of intergers with best sum
+     *
+     * @var mixed
+     */
+    private $bestCombo = false;
     
+    /**
+     * Alternate combinations just as good as best
+     *
+     * @var array
+     */
     public $altCombos = [];
     
-    public $amount;
+    /**
+     * The sum that the solver will try to equal or find
+     * closest greater than combination
+     *
+     * @var int
+     */
+    public $target;
     
+    /**
+     * The numbers allowed for the sum. Inifintely available in for each value. 
+     *
+     * @var array 
+     */
     public $numbers;
-    
-    public function __construct($amount)
+
+    /**
+     * Publicly consumable wrapper for RecursiveCombinationSolver::calculate
+     * 
+     * Sets up tracking props and returns the combo answer.
+     *
+     * @param int $target
+     * @param array $numbers
+     * @return array $bestCombo
+     */
+    public function calculateCombinations($target, $numbers)
     {
-        $this->amount = $amount;
+        $this->target = $target;
+        $this->numbers = $numbers;
+
+        // Eliminate combos quicker by starting with largest numbers
+        rsort($numbers);
+
+        $this->calculate($target, $numbers);
+
+        return $this->bestCombo;
     }
     
     /**
@@ -31,11 +74,13 @@ class RecursiveCombinationSolver
      * @param array $currentCombo Array keeping track of the values in a combo during recursion.
      * @return void
      */
-    public function calculate($target, $numbers, $currentCombo = [])
+    private function calculate($target, $numbers, $currentCombo = [])
     {
         // This solution is greater than the target or exactly right
         if ($target <= 0) {
-            $total = (abs($target) + $this->amount);
+            // Because were subtracting towards the target
+            // solutions greater than the total will become negative
+            $total = (abs($target) + $this->target);
             
             // Set first answer as benchmark solution
             if ($this->bestSum === false) {
