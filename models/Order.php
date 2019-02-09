@@ -30,7 +30,7 @@ class Order extends \yii\db\ActiveRecord
     {
         return [
             [['volume'], 'required'],
-            [['volume'], 'integer', 'min' => 1, 'max' => 17000],
+            [['volume'], 'integer', 'min' => 1],
             [['created_at'], 'safe'],
         ];
     }

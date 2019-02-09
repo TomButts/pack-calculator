@@ -49,7 +49,7 @@ class OrderTest extends \Codeception\Test\Unit
     /**
      * @dataProvider packProvider
      */
-    public function testItCalculatesRequiredPacks($volume, $expected)
+    public function testItCalculatesRequiredPacks($volume, $expectedSum, $expectedCombo)
     {
         $order = new Order();
         $order->volume = $volume;
@@ -58,14 +58,20 @@ class OrderTest extends \Codeception\Test\Unit
 
         $packs = [123, 300, 500, 600, 5000];
 
-        expect($order->calculateRequiredPacks($packs, $solver))
-            ->equals($expected);
+        $combos = $order->calculateRequiredPacks($packs, $solver);
+        
+        expect($combos)
+            ->equals($expectedCombo);
+        
+        expect($solver->bestSum)
+        ->equals($expectedSum);
     }
 
     public function packProvider()
     {
         return [
-            'when number is awkwardly below max pack' => [4000, [600, 600, 600, 600, 600, 500, 500]]
+            'when number is awkwardly below max pack' => [4000, 4000, [600, 600, 600, 600, 600, 500, 500]],
+            [1460, 1461, [600, 123, 123, 123, 123, 123, 123, 123]]
         ];
     }
 }

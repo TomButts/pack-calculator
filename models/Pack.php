@@ -47,9 +47,24 @@ class Pack extends \yii\db\ActiveRecord
         ];
     }
 
-    public function allVolumes()
+    /**
+     * Get all available pack sizes
+     *
+     * @return array $sizes
+     */
+    public function allSizes()
     {
-        // Return all available pack volumes        
+        $sizes = [];
+        
+        $packs = $this->find()->select('volume')->all();
+
+        if (!empty($packs)) {
+            foreach ($packs as $pack) {
+                $sizes[] = $pack->volume;
+            }
+        }
+
+        return $sizes;
     }
 
     /**

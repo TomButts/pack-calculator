@@ -6,6 +6,7 @@ use Yii;
 
 use app\models\Order;
 use app\models\Pack;
+use app\models\RecursiveCombinationSolver;
 
 use app\components\Helper;
 
@@ -26,13 +27,14 @@ class OrderController extends \yii\web\Controller
         $order = new Order();
 
         if ($order->load(Yii::$app->request->post())) {
-            if ($order->validate()) {
-                // TODO capture order
+            if ($order->validate()) {                
+                $pack = new Pack();
+                $solver = new RecursiveCombinationSolver();
+
+                $allPacks = $pack->allSizes();
                 
                 // Calculate required packs
-                $pack = new Pack();
-
-                $requiredPacks = $order->calculateRequiredPacks($pack);
+                $requiredPacks = $order->calculateRequiredPacks($allPacks, $solver);
 
                 // Render order pack details page
                 return $this->render('pack-requirements', [
