@@ -17,6 +17,9 @@ use yii\helpers\Html;
                 <small>The following table displays existing banana pack records.</small>
             </h1>
             <hr />
+
+            <p>Please do contact me with additional numbers or an entirely new set. I will add the new additions a soon as I can.</p>
+
             <table class="table">
                 <thead>
                     <tr>
@@ -39,7 +42,7 @@ use yii\helpers\Html;
 
             <br>
 
-            <?= Html::a('Return To Orders Landing', ['/order/create'], ['class'=>'btn btn-primary']) ?>
+            <?= Html::a('Return To Orders', ['/order/create'], ['class'=>'btn btn-primary']) ?>
         </div>
     </div>
 </div>

@@ -21,8 +21,7 @@ use yii\helpers\Html;
 
             <p>The current available pack sizes can be found <?= Html::a('here', ['/pack/index']) ?>.</p>
 
-
-            <p>Contact the <a href="mailto:tom.butts93@gmail.com">developer</a> if pack records must be updated.</p>
+            <p>Contact me <a href="mailto:tom.butts93@gmail.com">here</a> if you would like to test more pack sizes.</p>
 
             <br />
 
