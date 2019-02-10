@@ -4,7 +4,7 @@ This is my answer to the 'Brucies Banana Bazaar' question where optimum packs mu
 
 The problem stated firstly that packs could not be broken up. The number of bananas in delivered packs had to be greater than or equal to the number of bananas ordered. The primary goal was to deliver as few extra bananas as possible. A secondary goal was to deliver the minimum number of packs required while also delivering the least extra bananas. The examples implied packs can be used as many times as possible each with no limit.
 
-This application built on Yii2 contains logic to suggest banana pack amount. Models, views and controllers that were required to display the calculations. The application also contains unit tests relating to the main algorithm.
+This application built on Yii2 contains logic to suggest banana pack amount, models, views and controllers that were required to display the calculations. The project also contains a small set of unit tests that focus on the main algorithm.
 
 ## Pack Algorithm
 
