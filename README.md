@@ -1,233 +1,47 @@
-<p align="center">
-    <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
-    </a>
-    <h1 align="center">Yii 2 Basic Project Template</h1>
-    <br>
-</p>
+# Pack Calculator
 
-Yii 2 Basic Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-rapidly creating small projects.
+This is my answer to the 'Brucies Banana Bazaar' question where optimum packs must be calculated to provide a guide for fulfilling banana orders.
 
-The template contains the basic features including user login/logout and a contact page.
-It includes all commonly used configurations that would allow you to focus on adding new
-features to your application.
+The problem stated firstly that packs could not be broken up. The number of bananas in delivered packs had to be greater than or equal to the number of bananas ordered. The primary goal was to deliver as few extra bananas as possible. A secondary goal was to deliver the minimum number of packs required while also delivering the least extra bananas. The examples implied packs can be used as many times as possible each with no limit.
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-basic.svg)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-basic.svg)](https://packagist.org/packages/yiisoft/yii2-app-basic)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-app-basic.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-app-basic)
+This application built on Yii2 contains logic to suggest banana pack amount. Models, views and controllers that were required to display the calculations. The application also contains unit tests relating to the main algorithm.
 
-DIRECTORY STRUCTURE
--------------------
+## Pack Algorithm
 
-      assets/             contains assets definition
-      commands/           contains console commands (controllers)
-      config/             contains application configurations
-      controllers/        contains Web controller classes
-      mail/               contains view files for e-mails
-      models/             contains model classes
-      runtime/            contains files generated during runtime
-      tests/              contains various tests for the basic application
-      vendor/             contains dependent 3rd-party packages
-      views/              contains view files for the Web application
-      web/                contains the entry script and Web resources
+Initially a method similar to the ‘greedy’ method [here](https://en.wikipedia.org/wiki/Change-making_problem) was used. This worked for the pack sizes given in the example. However during unit testing it was discovered this approach would not work for some other sizes. As the question stated to make the code extendable other options were researched. After some research a similar mathematical problem was found called [the coin change problem](https://en.wikipedia.org/wiki/Change-making_problem).
 
+The coin change problem attempts to calculate the total number of coin combinations required in order to sum to an arbitrary amount. This problem is commonly solved using dynamic or recursive programming. A recursive solution to this problem was adapted to use conditions relevant to the question. Optimisations included using elements of the greedy algorithm, reversing available pack order and not checking permutations were applied. Unit tests run in almost no time for the project even on quite large numbers. 
 
+It was decided to create a class around this combination solving algorithm. A static helper method approach was also considered. A class allows the solver to be a [dependency](https://en.wikipedia.org/wiki/Dependency_inversion_principle) of other functions. An interface was also added in order to allow interoperability and type hinting. The class also allows other important quantities to be tracked such as the value of the best sum and alternative combinations that are equally valid as an answer. Finally separating this algoirthm into a generic solver class comforms to the [single responsibility principle](https://en.wikipedia.org/wiki/Single_responsibility_principle).
 
-REQUIREMENTS
-------------
+## Application
 
-The minimum requirement by this project template that your Web server supports PHP 5.4.0.
+The application was created using Yii2. This is the first time I have used Yii2 and I enjoyed learning about it. Overall however not much time was spent on the application structure of this project. 
 
+The following list describes the main elements of developing this application.
+* [PSR 2](https://www.php-fig.org/psr/psr-2/) coding standards were used for all PHP code written.
+* The MVC pattern was used for packs and orders although a limited number of actions were required to answer the question. It was decided full CRUD operations were outside scope.
+* A completely generic recursive combination finding algorithm. Business specific logic is found in pack and order models.
+* The built in migration system was used in order to create required tables.
+* Gii code generator was used to create boilerplate code for models and controllers.
+* The boilerplate front end that comes with Yii was used. Unfortunately there was not time or scope to fully show my front end skills in this question. 
 
-INSTALLATION
-------------
+## Tests
 
-### Install via Composer
+Using the codeception library unit tests were written. These tests focus on the recursive solver model. Tests also cover some of the business related logic in the order model.
 
-If you do not have [Composer](http://getcomposer.org/), you may install it by following the instructions
-at [getcomposer.org](http://getcomposer.org/doc/00-intro.md#installation-nix).
+## Deployment
 
-You can then install this project template using the following command:
-
-~~~
-php composer.phar create-project --prefer-dist --stability=dev yiisoft/yii2-app-basic basic
-~~~
-
-Now you should be able to access the application through the following URL, assuming `basic` is the directory
-directly under the Web root.
-
-~~~
-http://localhost/basic/web/
-~~~
-
-### Install from an Archive File
-
-Extract the archive file downloaded from [yiiframework.com](http://www.yiiframework.com/download/) to
-a directory named `basic` that is directly under the Web root.
-
-Set cookie validation key in `config/web.php` file to some random secret string:
-
-```php
-'request' => [
-    // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-    'cookieValidationKey' => '<secret random string goes here>',
-],
-```
-
-You can then access the application through the following URL:
-
-~~~
-http://localhost/basic/web/
-~~~
-
-
-### Install with Docker
-
-Update your vendor packages
-
-    docker-compose run --rm php composer update --prefer-dist
+For deployment a digital ocean droplet was used.  A one click LAMP application mode is available on digital ocean which was used to install the basis of what is needed immediately. Some additional configuration was required however. MySql remote connections were allowed so sequel pro could be used to inspect the database. Git was used to pull the project onto the server. Some additional apache modules were enabled and the document root was changed. After that the project was initiated with composer and was able to be served.
     
-Run the installation triggers (creating cookie validation code)
+## Conclusion
 
-    docker-compose run --rm php composer install    
-    
-Start the container
+The core requirements were delivered successfully.
 
-    docker-compose up -d
-    
-You can then access the application through the following URL:
+Additionally storing the pack sizes in the database and using an interface for the solver allows easy extension of the current code.
 
-    http://127.0.0.1:8000
+The answering of the question is also documented fairly well via this markdown file, code comments, doc blocks and also extent tests.
 
-**NOTES:** 
-- Minimum required Docker engine version `17.04` for development (see [Performance tuning for volume mounts](https://docs.docker.com/docker-for-mac/osxfs-caching/))
-- The default configuration uses a host-volume in your home directory `.docker-composer` for composer caches
+Improvements could be made to the front end, testing and pack CRUD operations. Time was limited however.
 
-
-CONFIGURATION
--------------
-
-### Database
-
-Edit the file `config/db.php` with real data, for example:
-
-```php
-return [
-    'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=yii2basic',
-    'username' => 'root',
-    'password' => '1234',
-    'charset' => 'utf8',
-];
-```
-
-**NOTES:**
-- Yii won't create the database for you, this has to be done manually before you can access it.
-- Check and edit the other files in the `config/` directory to customize your application as required.
-- Refer to the README in the `tests` directory for information specific to basic application tests.
-
-
-TESTING
--------
-
-Tests are located in `tests` directory. They are developed with [Codeception PHP Testing Framework](http://codeception.com/).
-By default there are 3 test suites:
-
-- `unit`
-- `functional`
-- `acceptance`
-
-Tests can be executed by running
-
-```
-vendor/bin/codecept run
-```
-
-The command above will execute unit and functional tests. Unit tests are testing the system components, while functional
-tests are for testing user interaction. Acceptance tests are disabled by default as they require additional setup since
-they perform testing in real browser. 
-
-
-### Running  acceptance tests
-
-To execute acceptance tests do the following:  
-
-1. Rename `tests/acceptance.suite.yml.example` to `tests/acceptance.suite.yml` to enable suite configuration
-
-2. Replace `codeception/base` package in `composer.json` with `codeception/codeception` to install full featured
-   version of Codeception
-
-3. Update dependencies with Composer 
-
-    ```
-    composer update  
-    ```
-
-4. Download [Selenium Server](http://www.seleniumhq.org/download/) and launch it:
-
-    ```
-    java -jar ~/selenium-server-standalone-x.xx.x.jar
-    ```
-
-    In case of using Selenium Server 3.0 with Firefox browser since v48 or Google Chrome since v53 you must download [GeckoDriver](https://github.com/mozilla/geckodriver/releases) or [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) and launch Selenium with it:
-
-    ```
-    # for Firefox
-    java -jar -Dwebdriver.gecko.driver=~/geckodriver ~/selenium-server-standalone-3.xx.x.jar
-    
-    # for Google Chrome
-    java -jar -Dwebdriver.chrome.driver=~/chromedriver ~/selenium-server-standalone-3.xx.x.jar
-    ``` 
-    
-    As an alternative way you can use already configured Docker container with older versions of Selenium and Firefox:
-    
-    ```
-    docker run --net=host selenium/standalone-firefox:2.53.0
-    ```
-
-5. (Optional) Create `yii2_basic_tests` database and update it by applying migrations if you have them.
-
-   ```
-   tests/bin/yii migrate
-   ```
-
-   The database configuration can be found at `config/test_db.php`.
-
-
-6. Start web server:
-
-    ```
-    tests/bin/yii serve
-    ```
-
-7. Now you can run all available tests
-
-   ```
-   # run all available tests
-   vendor/bin/codecept run
-
-   # run acceptance tests
-   vendor/bin/codecept run acceptance
-
-   # run only unit and functional tests
-   vendor/bin/codecept run unit,functional
-   ```
-
-### Code coverage support
-
-By default, code coverage is disabled in `codeception.yml` configuration file, you should uncomment needed rows to be able
-to collect code coverage. You can run your tests and collect coverage with the following command:
-
-```
-#collect coverage for all tests
-vendor/bin/codecept run -- --coverage-html --coverage-xml
-
-#collect coverage only for unit tests
-vendor/bin/codecept run unit -- --coverage-html --coverage-xml
-
-#collect coverage for unit and functional tests
-vendor/bin/codecept run functional,unit -- --coverage-html --coverage-xml
-```
-
-You can see code coverage output under the `tests/_output` directory.
+Please ask to change pack values or feel free to download the project and play with the unit tests.
