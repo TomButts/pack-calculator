@@ -77,7 +77,7 @@ class RecursiveCombinationSolver implements CombinationSolver
      * @param integer $currentNumber Array keeping track of the values in a combo during recursion.
      * @return void
      */
-    private function calculate($target, $numbers, $currentCombo = [], $currentNumber = 0)
+    private function calculate(int $target, array $numbers, array $currentCombo = [], int $currentNumber = 0)
     {
         // This solution is greater than the target or exactly right
         if ($target <= 0) {
@@ -136,7 +136,12 @@ class RecursiveCombinationSolver implements CombinationSolver
         
         // The target has not been reached keep building combination
         for ($number = $currentNumber; $number < count($numbers); $number++) {
-            $this->calculate($target - $numbers[$number], $numbers, array_merge($currentCombo, [$numbers[$number]]), $number);
+            $this->calculate(
+                $target - $numbers[$number],
+                $numbers,
+                array_merge($currentCombo, [$numbers[$number]]),
+                $number
+            );
         }
     }
 }
